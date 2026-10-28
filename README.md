@@ -261,8 +261,10 @@ Open **http://localhost:3000**. The image runs as the non-root `node` user, expo
 Seed demo data inside the container:
 
 ```bash
-docker exec student-attendance npm run seed -- --reset
+docker exec -e TZ=Asia/Kolkata student-attendance npm run seed -- --reset
 ```
+
+The seed uses the container's local date. Containers default to UTC; replace `Asia/Kolkata` with your IANA timezone if you want the demo to run through your local "today".
 
 ### Docker Compose
 
@@ -274,6 +276,12 @@ docker exec student-attendance npm run seed -- --reset
 ```bash
 docker compose up -d --build
 docker compose ps
+```
+
+Seed the Compose app volume (with an explicit timezone for the demo date):
+
+```bash
+docker compose exec -e TZ=Asia/Kolkata app npm run seed -- --reset
 ```
 
 If a local Node process already uses port 3000, start only Jenkins:
@@ -394,7 +402,7 @@ Seed demo data inside the pod:
 
 ```bash
 POD=$(kubectl -n student-attendance get pod -l app.kubernetes.io/name=student-attendance -o jsonpath='{.items[0].metadata.name}')
-kubectl -n student-attendance exec "$POD" -- npm run seed -- --reset
+kubectl -n student-attendance exec "$POD" -- env TZ=Asia/Kolkata npm run seed -- --reset
 ```
 
 The deployment uses `imagePullPolicy: IfNotPresent`, so the image loaded with `kind load` is used. After changing application code, rebuild the image and reload it:
