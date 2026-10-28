@@ -600,7 +600,9 @@ function createApp({ db, publicDir = path.join(__dirname, "..", "public") }) {
     express.static(publicDir, {
       index: false,
       etag: true,
-      maxAge: process.env.NODE_ENV === "production" ? "1h" : 0,
+      // Asset filenames are not content-hashed, so always revalidate to avoid
+      // serving stale JavaScript or CSS after a redeploy.
+      maxAge: 0,
     }),
   );
 
@@ -624,6 +626,22 @@ function createApp({ db, publicDir = path.join(__dirname, "..", "public") }) {
 
     if (error.type === "entity.parse.failed") {
       return res.status(400).json({ error: "Invalid JSON request body." });
+    }
+
+    if (error.type === "entity.too.large") {
+      return res.status(413).json({ error: "Request body is too large." });
+    }
+
+    if (
+      error.type === "charset.unsupported" ||
+      error.type === "encoding.unsupported"
+    ) {
+      return res.status(415).json({ error: "Unsupported request encoding." });
+    }
+
+    const status = Number(error.status || error.statusCode);
+    if (status >= 400 && status < 500) {
+      return res.status(status).json({ error: "Invalid request." });
     }
 
     console.error(error);

@@ -295,6 +295,42 @@ test("CSV export contains the report for the selected month", async () => {
   assert.match(csv, /100\.00%/);
 });
 
+test("students without attendance are shown as no data", async () => {
+  await navigate("students");
+  await driver.findElement(By.id("student-roll")).sendKeys("SEL002");
+  await driver.findElement(By.id("student-name")).sendKeys("No Data Student");
+  await driver.findElement(By.id("student-department")).sendKeys("Computer Science");
+  await driver.findElement(By.id("add-student-button")).click();
+  await waitForToast("was added to the roster");
+
+  await navigate("reports");
+  await driver.wait(
+    until.elementLocated(By.css("#report-table tbody tr")),
+    10000,
+  );
+
+  const row = await driver.findElement(
+    By.xpath("//*[@id='report-table']//tr[contains(., 'No Data Student')]"),
+  );
+  const rowText = await row.getText();
+  assert.match(rowText, /No data/);
+  assert.doesNotMatch(rowText, /On track/);
+
+  const reportButton = await row.findElement(By.css("[data-report-student]"));
+  await driver.executeScript("arguments[0].click();", reportButton);
+  await driver.wait(
+    until.elementLocated(By.css("#report-dialog[open]")),
+    10000,
+  );
+  await driver.wait(async () => {
+    const text = await driver.findElement(By.id("report-dialog-content")).getText();
+    return text.includes("No attendance recorded for this month.");
+  }, 10000);
+  const dialogText = await driver.findElement(By.id("report-dialog-content")).getText();
+  assert.match(dialogText, /No data/);
+  await driver.findElement(By.id("report-dialog-close")).click();
+});
+
 test("the attendance threshold can be changed in settings", async () => {
   await navigate("settings");
   await driver.wait(

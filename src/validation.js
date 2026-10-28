@@ -47,8 +47,17 @@ function isValidPeriod(value) {
 }
 
 function isValidId(value) {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0;
+  if (typeof value !== "string" && typeof value !== "number") {
+    return false;
+  }
+
+  const text = String(value).trim();
+  if (!/^\d+$/.test(text)) {
+    return false;
+  }
+
+  const id = Number(text);
+  return Number.isSafeInteger(id) && id > 0;
 }
 
 function isValidStatus(value) {
@@ -56,10 +65,20 @@ function isValidStatus(value) {
 }
 
 function parseThreshold(value) {
-  const threshold = Number(value);
+  let threshold;
+
+  if (typeof value === "number") {
+    threshold = value;
+  } else if (typeof value === "string" && /^\d+$/.test(value.trim())) {
+    threshold = Number(value.trim());
+  } else {
+    return null;
+  }
+
   if (!Number.isInteger(threshold) || threshold < 0 || threshold > 100) {
     return null;
   }
+
   return threshold;
 }
 

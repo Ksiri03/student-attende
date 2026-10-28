@@ -1432,6 +1432,7 @@ function renderReportTable(report) {
       <tbody>
         ${report.students
           .map((student) => {
+            const hasData = student.working_periods > 0;
             const progressClass = student.low_attendance ? "warning" : "";
             return `
               <tr class="${student.low_attendance ? "low-row" : ""}">
@@ -1454,14 +1455,16 @@ function renderReportTable(report) {
                     <div class="progress-track">
                       <div class="progress-fill ${progressClass}" style="--progress: ${Math.min(100, student.attendance_percentage)}%"></div>
                     </div>
-                    <span class="progress-value">${escapeHtml(formatPercentage(student.attendance_percentage))}</span>
+                    <span class="progress-value">${hasData ? escapeHtml(formatPercentage(student.attendance_percentage)) : "No data"}</span>
                   </div>
                 </td>
                 <td>
                   ${
-                    student.low_attendance
-                      ? '<span class="pill pill-warning">Needs attention</span>'
-                      : '<span class="pill pill-success">On track</span>'
+                    !hasData
+                      ? '<span class="pill pill-neutral">No data</span>'
+                      : student.low_attendance
+                        ? '<span class="pill pill-warning">Needs attention</span>'
+                        : '<span class="pill pill-success">On track</span>'
                   }
                 </td>
                 <td>
@@ -1565,9 +1568,12 @@ async function openStudentReport(studentId) {
 }
 
 function renderStudentReport(report) {
-  const statusPill = report.low_attendance
-    ? '<span class="pill pill-warning">Needs attention</span>'
-    : '<span class="pill pill-success">On track</span>';
+  const hasData = report.working_periods > 0;
+  const statusPill = !hasData
+    ? '<span class="pill pill-neutral">No data</span>'
+    : report.low_attendance
+      ? '<span class="pill pill-warning">Needs attention</span>'
+      : '<span class="pill pill-success">On track</span>';
 
   const daily = report.daily.length
     ? report.daily
@@ -1605,7 +1611,7 @@ function renderStudentReport(report) {
       </div>
     </div>
     <div class="report-detail-grid">
-      <div class="report-detail"><span>Attendance</span><strong>${escapeHtml(formatPercentage(report.attendance_percentage))}</strong></div>
+      <div class="report-detail"><span>Attendance</span><strong>${hasData ? escapeHtml(formatPercentage(report.attendance_percentage)) : "No data"}</strong></div>
       <div class="report-detail"><span>Present</span><strong>${formatNumber(report.present)} <small>periods</small></strong></div>
       <div class="report-detail"><span>Absent</span><strong>${formatNumber(report.absent)} <small>periods</small></strong></div>
       <div class="report-detail"><span>Working periods</span><strong>${formatNumber(report.working_periods)}</strong></div>

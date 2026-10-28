@@ -83,8 +83,8 @@ Useful commands:
 npm run dev         # start with Node's watch mode
 npm run seed -- --reset
 npm run check       # syntax checks
-npm test            # 19 API tests
-npm run test:e2e    # 6 Selenium tests (requires Chrome)
+npm test            # 22 API tests
+npm run test:e2e    # 7 Selenium tests (requires Chrome)
 npm run verify      # 12-check API smoke verification
 npm run screenshots # regenerate documentation screenshots (requires a seeded running app)
 ```
@@ -210,15 +210,15 @@ The example above is intentionally incomplete; the real request must include all
 { "error": "Attendance is incomplete. Mark every student for every working period." }
 ```
 
-Common status codes: `400` validation error, `404` missing student/endpoint, `409` duplicate roll number, `500` unexpected server error.
+Common status codes: `400` validation error, `404` missing student/endpoint, `409` duplicate roll number, `413` request body too large, `500` unexpected server error.
 
 ## Testing and verification
 
 | Command | What it checks |
 | --- | --- |
 | `npm run check` | JavaScript syntax for server, API, database, reports, validation, frontend, and tests |
-| `npm test` / `npm run test:api` | 19 API tests against a temporary SQLite database |
-| `npm run test:e2e` | 6 Selenium/Chrome tests covering dashboard, students, attendance, reports, CSV, and settings |
+| `npm test` / `npm run test:api` | 22 API tests against a temporary SQLite database |
+| `npm run test:e2e` | 7 Selenium/Chrome tests covering dashboard, students, attendance, reports, CSV, and settings |
 | `npm run verify` | 12 end-to-end API smoke checks (health, students, duplicates, attendance, reports, CSV, settings) |
 | `npm run test:all` | API tests followed by Selenium tests |
 
@@ -227,8 +227,8 @@ The Selenium tests start their own app instance with a temporary database on an 
 ### Manual verification checklist
 
 - [ ] `npm run check` passes.
-- [ ] `npm test` passes (19/19).
-- [ ] `npm run test:e2e` passes (6/6).
+- [ ] `npm test` passes (22/22).
+- [ ] `npm run test:e2e` passes (7/7).
 - [ ] `npm run verify` passes (12/12).
 - [ ] Add a student; the roster and dashboard update.
 - [ ] Save a complete register; reload the date and confirm the values persist.
@@ -466,8 +466,8 @@ student_attende/
 │   ├── verify.js                 # 12-check API smoke verifier
 │   └── capture-screenshots.js    # Documentation screenshots
 ├── tests/
-│   ├── api.test.js               # 19 API tests
-│   └── e2e.test.js               # 6 Selenium tests
+│   ├── api.test.js               # 22 API tests
+│   └── e2e.test.js               # 7 Selenium tests
 ├── screenshots/                  # Documentation images
 ├── Dockerfile                    # Multi-stage production image
 ├── docker-compose.yml            # App + Jenkins
@@ -486,11 +486,14 @@ The project was verified locally with the following results:
 | Check | Result |
 | --- | --- |
 | Syntax checks (`npm run check`) | Pass |
-| API tests (`npm test`) | 19/19 pass |
-| Selenium tests (`npm run test:e2e`) | 6/6 pass |
+| API tests (`npm test`) | 22/22 pass |
+| Selenium tests (`npm run test:e2e`) | 7/7 pass |
 | API smoke verification (`npm run verify`) | 12/12 pass |
-| Docker image build | Pass |
+| Adversarial API checks | 62/62 pass (validation, IDs, body limits, CSV, security headers) |
+| Clean-room install (`npm ci` + checks/tests) | Pass |
+| Docker image build | Pass (including a no-cache rebuild) |
 | Container health, CRUD, reports, CSV, persistence | Pass |
+| SQLite integrity and foreign keys | `integrity_check` ok, 0 FK violations |
 | Jenkins image toolchain | Node 22, npm 10, Git 2.x, Docker CLI 27, Java 17 |
 | Jenkins pipeline | See [docs/VERIFICATION.md](docs/VERIFICATION.md) for the latest run |
 | Docker Compose app service | See [docs/VERIFICATION.md](docs/VERIFICATION.md) |

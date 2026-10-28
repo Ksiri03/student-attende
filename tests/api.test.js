@@ -169,6 +169,35 @@ test("students can be edited", async () => {
   assert.equal(missing.status, 404);
 });
 
+test("student ids must be plain positive integers", async () => {
+  for (const id of ["0", "-1", "1.5", "1e3", "abc"]) {
+    const response = await request(`/api/students/${id}`, { method: "DELETE" });
+    assert.equal(response.status, 400, `Expected id ${id} to be rejected`);
+  }
+});
+
+test("malformed and oversized JSON bodies return JSON errors", async () => {
+  const malformed = await fetch(`${baseUrl}/api/students`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{not valid json",
+  });
+  assert.equal(malformed.status, 400);
+  assert.match((await malformed.json()).error, /invalid json/i);
+
+  const oversized = await fetch(`${baseUrl}/api/students`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      roll_number: "HUGE001",
+      name: "x".repeat(2 * 1024 * 1024),
+      department: "Computer Science",
+    }),
+  });
+  assert.equal(oversized.status, 413);
+  assert.match((await oversized.json()).error, /too large/i);
+});
+
 test("attendance defaults to seven working periods and validates dates", async () => {
   const response = await request("/api/attendance?date=2026-03-02");
   assert.equal(response.status, 200);
@@ -310,11 +339,23 @@ test("existing attendance can be corrected", async () => {
 });
 
 test("threshold settings are validated and applied", async () => {
-  const invalid = await request("/api/settings", {
+  for (const invalidValue of [101, -1, 75.5, null, true, "", "abc"]) {
+    const invalid = await request("/api/settings", {
+      method: "PUT",
+      body: { attendance_threshold: invalidValue },
+    });
+    assert.equal(
+      invalid.status,
+      400,
+      `Expected threshold ${JSON.stringify(invalidValue)} to be rejected`,
+    );
+  }
+
+  const missing = await request("/api/settings", {
     method: "PUT",
-    body: { attendance_threshold: 101 },
+    body: {},
   });
-  assert.equal(invalid.status, 400);
+  assert.equal(missing.status, 400);
 
   const response = await request("/api/settings", {
     method: "PUT",
@@ -348,6 +389,31 @@ test("monthly CSV export includes headers, values and BOM", async () => {
   assert.match(csv, /Alice Johnson/);
   assert.match(csv, /"92\.86%"/);
   assert.match(csv, /"Yes"/);
+});
+
+test("CSV export neutralizes spreadsheet formulas", async () => {
+  const created = await request("/api/students", {
+    method: "POST",
+    body: {
+      roll_number: "CSV001",
+      name: '=HYPERLINK("http://example.invalid")',
+      department: "+cmd",
+    },
+  });
+  assert.equal(created.status, 201);
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/api/reports/monthly.csv?month=2026-03`,
+    );
+    const csv = await response.text();
+    assert.ok(csv.includes(`"'=HYPERLINK(""http://example.invalid"")"`));
+    assert.ok(csv.includes(`"'+cmd"`));
+  } finally {
+    await request(`/api/students/${created.body.student.id}`, {
+      method: "DELETE",
+    });
+  }
 });
 
 test("dashboard endpoint combines class, daily and low-attendance data", async () => {
