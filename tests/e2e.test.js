@@ -301,17 +301,29 @@ test("students without attendance are shown as no data", async () => {
   await driver.findElement(By.id("student-name")).sendKeys("No Data Student");
   await driver.findElement(By.id("student-department")).sendKeys("Computer Science");
   await driver.findElement(By.id("add-student-button")).click();
-  await waitForToast("was added to the roster");
+  await waitForToast("No Data Student was added to the roster");
+  await driver.wait(async () => {
+    const text = await driver.findElement(By.id("students-list")).getText();
+    return text.includes("No Data Student");
+  }, 10000);
 
   await navigate("reports");
-  await driver.wait(
-    until.elementLocated(By.css("#report-table tbody tr")),
-    10000,
-  );
+  const row = await driver.wait(async () => {
+    const rows = await driver.findElements(By.css("#report-table tbody tr"));
+    for (const candidate of rows) {
+      const text = await candidate.getText();
+      if (text.includes("No Data Student")) {
+        return candidate;
+      }
+    }
+    return false;
+  }, 10000);
 
-  const row = await driver.findElement(
-    By.xpath("//*[@id='report-table']//tr[contains(., 'No Data Student')]"),
-  );
+  await driver.wait(async () => {
+    const text = await row.getText();
+    return text.includes("No data");
+  }, 10000);
+
   const rowText = await row.getText();
   assert.match(rowText, /No data/);
   assert.doesNotMatch(rowText, /On track/);
