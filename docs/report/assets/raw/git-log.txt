@@ -1,0 +1,6 @@
+﻿* 122609d Stabilize no-data Selenium test waits
+* df2cff6 Record full revalidation and build 6 evidence
+* 055fc65 Harden validation, error handling and no-data reporting
+* f97ebc0 Document verification results and timezone-aware demo seeding
+* 4bac3aa Enable local SCM checkout and expand syntax validation
+* 84e6f1c Build Attendly student attendance system with DevOps pipeline

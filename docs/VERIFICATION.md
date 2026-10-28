@@ -62,7 +62,8 @@ Evidence:
 - `docker build --no-cache --pull`: PASS; isolated container healthy as UID 1000 (`node`).
 - Isolated container seed with `TZ=Asia/Kolkata`: 12 students, 21 working days, 147 periods, 1,580 present, 184 absent, 89.57% average, 2 low-attendance students.
 - SQLite `integrity_check` = `ok`; foreign-key violations = 0 after restart.
-- Compose and Kubernetes redeployed to the build #6 image; data totals unchanged.
+- Compose and Kubernetes redeployed to the build #8 image; data totals unchanged.
+- The no-data Selenium test now waits for rendered row text instead of raw element presence; it passed three consecutive full-suite runs (7/7 each).
 
 ## Docker
 
@@ -109,6 +110,8 @@ Credentials: `admin` / `admin123` (local demo only)
 | #4 | `4bac3aa` | User | SUCCESS | 35.3 s |
 | #5 | `f97ebc0` | SCM change | SUCCESS | 10.3 s |
 | #6 | `055fc65` | User | SUCCESS | 15.0 s |
+| #7 | `df2cff6` | User | SUCCESS | 12.2 s |
+| #8 | `122609d` | User | SUCCESS | 14.2 s |
 
 Build #1 failed because Jenkins refused to check out the local `file:///workspace` remote by default. The controller was configured with:
 
@@ -118,15 +121,15 @@ Build #1 failed because Jenkins refused to check out the local `file:///workspac
 
 The property is present in both `jenkins/Dockerfile` and the Compose `JAVA_OPTS`. Subsequent builds succeeded.
 
-Documentation-only commits after the final code build may trigger additional successful builds; they do not change the application image. The final code build (#6) executed every stage:
+Documentation-only commits after the final code build may trigger additional successful builds; they do not change the application image. The final code build (#8) executed every stage:
 
 1. **Environment** — reported Node v22.23.4, npm 10.9.9, Git 2.47.3, Docker CLI 27.5.1, Docker server 29.7.2.
 2. **Install dependencies** — `npm ci` installed 132 packages with 0 vulnerabilities.
 3. **Validate application** — `npm run check` and all 22 API tests passed.
-4. **Build Docker image** — built `student-attendance:ci-6` and retagged `student-attendance:latest`.
+4. **Build Docker image** — built `student-attendance:ci-8` and retagged `student-attendance:latest`.
 5. **Container smoke test** — started the image, waited for health, created a student, saved seven periods, verified the monthly report, and removed the container.
 
-Build #6 checked out commit `055fc65` and finished with `Finished: SUCCESS` in 15.0 seconds. Its image ID is `sha256:6892fb6a9725d2291b83f1c94603325d3d5d6df6dfb2d02fb1b697e5910a822b`.
+Build #8 checked out commit `122609d` and finished with `Finished: SUCCESS` in 14.2 seconds. Its image ID is `sha256:ec22786cc3c10884f937b58f202c3af204d88957eb563c6f8fa56a8b1460fa1d`.
 
 ## Kubernetes with kind
 
@@ -142,7 +145,7 @@ Build #6 checked out commit `055fc65` and finished with `Finished: SUCCESS` in 1
 | Health at `http://localhost:30080/api/health` | PASS |
 | Persistence across pod deletion/replacement | PASS |
 
-The build #6 image was loaded into kind, the Deployment was restarted, and the pod was deleted and replaced again. The replacement pod served the same report totals from the PVC, and the new validation behavior (`null` threshold → `400`) was confirmed through NodePort 30080. The demo data was seeded inside the pod with `TZ=Asia/Kolkata`:
+The build #8 image was loaded into kind, the Deployment was restarted, and the pod was deleted and replaced again. The replacement pod served the same report totals from the PVC, and the new validation behavior (`null` threshold → `400`) was confirmed through NodePort 30080. The demo data was seeded inside the pod with `TZ=Asia/Kolkata`:
 
 - 12 students
 - 21 working days
@@ -176,7 +179,7 @@ Manual checks included adding/editing/deleting students, bulk marking, saving an
 - **Application authentication:** the app intentionally has no login. Deploy it behind an authenticated reverse proxy before exposing it.
 - **Timezone:** containers default to UTC. The demo data in Compose and Kubernetes was seeded with `TZ=Asia/Kolkata` so it matches the local demo date. Use your own IANA timezone if needed.
 - **GitHub:** no remote was configured and no push was performed because GitHub credentials were unavailable in this environment. The local repository is initialized on `main` with the complete project history.
-- **Docker Hub:** no registry credentials were available, so the image was not pushed. It is available locally as `student-attendance:latest` and `student-attendance:ci-6`.
+- **Docker Hub:** no registry credentials were available, so the image was not pushed. It is available locally as `student-attendance:latest` and `student-attendance:ci-8`.
 
 ## Reproduction commands
 

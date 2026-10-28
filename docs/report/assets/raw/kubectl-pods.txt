@@ -1,0 +1,2 @@
+﻿NAME                                  READY   STATUS    RESTARTS   AGE   IP            NODE                               NOMINATED NODE   READINESS GATES
+student-attendance-7d7788d6c8-24nbg   1/1     Running   0          17m   10.244.0.12   student-attendance-control-plane   <none>           <none>

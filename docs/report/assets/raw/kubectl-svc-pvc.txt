@@ -1,0 +1,5 @@
+﻿NAME                         TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+service/student-attendance   NodePort   10.96.64.70   <none>        80:30080/TCP   39m
+
+NAME                                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/attendance-data   Bound    pvc-a80bfe59-bb81-451d-9d92-f81fd205f3d8   1Gi        RWO            standard       <unset>                 39m

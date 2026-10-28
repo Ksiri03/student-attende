@@ -1,0 +1,19 @@
+
+> student-attendance-devops@1.0.0 test:e2e
+> node --test tests/e2e.test.js
+
+✔ dashboard loads with live class statistics (1782.1698ms)
+✔ a student can be added through the interface (666.6814ms)
+✔ attendance can be marked for all periods, saved and reloaded (792.3078ms)
+✔ monthly report, daily history and individual report are rendered (1051.1928ms)
+✔ CSV export contains the report for the selected month (16.5048ms)
+✔ students without attendance are shown as no data (1471.5657ms)
+✔ the attendance threshold can be changed in settings (737.3516ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7334.2964

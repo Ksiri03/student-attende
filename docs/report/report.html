@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Attendance Management System using DevOps Tools — Project Report</title>
+<style>
+  :root {
+    --navy: #17365d;
+    --navy-soft: #1f4e79;
+    --blue: #2e5c8a;
+    --ink: #1b1b1b;
+    --muted: #5a6b80;
+    --rule: #c9d3df;
+    --panel: #eef3f9;
+    --table-head: #dbe8f6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: var(--ink);
+    font-family: "Segoe UI", Calibri, Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    padding: 19mm 22mm 17mm;
+    overflow: hidden;
+    page-break-after: always;
+    background: #ffffff;
+  }
+
+  .page:last-child { page-break-after: auto; }
+
+  .footer {
+    position: absolute;
+    left: 22mm;
+    right: 22mm;
+    bottom: 8mm;
+    border-top: 0.5pt solid var(--rule);
+    padding-top: 2mm;
+    font-size: 8.5pt;
+    color: #6b7f96;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .footer .page-number { margin-left: auto; }
+
+  h1, h2, h3, p, ul { margin: 0; }
+
+  h2 {
+    color: var(--navy);
+    font-size: 17pt;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 3.2mm;
+  }
+
+  h2.section-gap { margin-top: 6.2mm; }
+
+  h3 {
+    color: var(--navy-soft);
+    font-size: 11.5pt;
+    line-height: 1.2;
+    margin: 4.2mm 0 1.4mm;
+  }
+
+  p {
+    font-size: 10.4pt;
+    line-height: 1.42;
+    text-align: justify;
+  }
+
+  p + p { margin-top: 2.2mm; }
+
+  ul {
+    margin: 1.2mm 0 0;
+    padding-left: 5.2mm;
+  }
+
+  li {
+    font-size: 10.4pt;
+    line-height: 1.42;
+    margin-bottom: 0.9mm;
+    padding-left: 0.6mm;
+  }
+
+  li::marker { color: var(--blue); }
+
+  .cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30mm;
+    text-align: center;
+  }
+
+  .cover-rule {
+    width: 86mm;
+    height: 1.1mm;
+    background: var(--blue);
+    margin-bottom: 17mm;
+  }
+
+  .cover h1 {
+    color: var(--navy);
+    font-size: 27pt;
+    line-height: 1.18;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+
+  .cover-subtitle {
+    margin-top: 12mm;
+    color: #44546a;
+    font-size: 13pt;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .cover-divider {
+    width: 68mm;
+    border-top: 0.7pt solid #8fa3b8;
+    margin: 12mm 0 13mm;
+  }
+
+  .cover-field {
+    display: flex;
+    align-items: flex-end;
+    gap: 3mm;
+    font-size: 11.5pt;
+    color: #44546a;
+    margin-bottom: 7mm;
+  }
+
+  .cover-field .line {
+    display: inline-block;
+    width: 82mm;
+    border-bottom: 0.8pt solid #7f93a8;
+    height: 5mm;
+  }
+
+  .cover-field .line.short { width: 72mm; }
+
+  .cover-dept {
+    font-size: 11.5pt;
+    line-height: 1.5;
+    color: #44546a;
+    margin: 4mm 0 9mm;
+  }
+
+  .cover-repo {
+    margin-top: 16mm;
+    width: 100%;
+    text-align: left;
+    padding-left: 2mm;
+  }
+
+  .repo-label {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1b1b1b;
+    margin-bottom: 6mm;
+  }
+
+  .cover-repo a {
+    display: block;
+    text-align: center;
+    color: #1b4f82;
+    font-size: 10.8pt;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .tech-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2mm 0 2mm;
+    font-size: 9.8pt;
+  }
+
+  .tech-table th,
+  .tech-table td {
+    border: 0.6pt solid #8fa3b8;
+    padding: 2.6mm 3mm;
+    vertical-align: top;
+    text-align: left;
+    line-height: 1.3;
+  }
+
+  .tech-table th {
+    background: var(--table-head);
+    color: #17365d;
+    font-weight: 700;
+  }
+
+  .tech-table td:first-child { width: 37%; font-weight: 600; color: #17365d; }
+
+  figure { margin: 0; }
+
+  .shot {
+    display: block;
+    margin: 2.2mm auto 0;
+    border: 0.6pt solid #d5dee9;
+    border-radius: 1.2mm;
+    background: #ffffff;
+  }
+
+  figcaption {
+    margin-top: 1.4mm;
+    text-align: center;
+    font-size: 8.3pt;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .w-full { width: 100%; }
+  .w-160 { width: 160mm; }
+  .w-150 { width: 150mm; }
+  .w-140 { width: 140mm; }
+  .w-130 { width: 130mm; }
+  .w-120 { width: 120mm; }
+
+  .module-name {
+    color: var(--navy-soft);
+    font-weight: 700;
+    font-size: 10.4pt;
+  }
+
+  .module-text {
+    margin-top: 0.4mm;
+    margin-bottom: 1.9mm;
+  }
+
+  /* Page 2 carries the densest prose; tighten it slightly so the five
+     functional modules and the footer both fit on one A4 page. */
+  .page-2 h2 { margin-bottom: 2.1mm; font-size: 16.5pt; }
+  .page-2 h2.section-gap { margin-top: 4.2mm; }
+  .page-2 p,
+  .page-2 li { font-size: 9.9pt; line-height: 1.35; }
+  .page-2 .module-text { margin-bottom: 1mm; }
+  .page-2 li { margin-bottom: 0.5mm; }
+
+  .app-shot {
+    display: block;
+    width: 126mm;
+    height: 74mm;
+    object-fit: cover;
+    object-position: top center;
+    margin: 2mm auto 0;
+    border: 0.6pt solid #d5dee9;
+    border-radius: 1.2mm;
+  }
+
+  .app-figure { margin-bottom: 3.4mm; }
+
+  .note-box {
+    margin-top: 3mm;
+    padding: 2.6mm 3.2mm;
+    background: var(--panel);
+    border-left: 1mm solid var(--blue);
+    font-size: 9.6pt;
+    line-height: 1.4;
+    color: #33475f;
+  }
+
+  .kpi-row {
+    display: flex;
+    gap: 3mm;
+    margin-top: 2.4mm;
+  }
+
+  .kpi {
+    flex: 1;
+    background: var(--panel);
+    border: 0.5pt solid #d5dee9;
+    border-radius: 1.4mm;
+    padding: 2.2mm 2.6mm;
+  }
+
+  .kpi strong { display: block; color: var(--navy); font-size: 13pt; line-height: 1.1; }
+  .kpi span { display: block; margin-top: 0.8mm; color: var(--muted); font-size: 8pt; line-height: 1.2; }
+
+  @page { size: A4; margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================== PAGE 1 ============================== -->
+<section class="page cover">
+  <div class="cover-rule"></div>
+  <h1>Student Attendance Management System<br>using DevOps Tools</h1>
+  <p class="cover-subtitle">Project Report</p>
+  <div class="cover-divider"></div>
+
+  <div class="cover-field">
+    <span>Submitted by:</span>
+    <span class="line"></span>
+  </div>
+
+  <div class="cover-dept">
+    Department: Computer Science and Engineering<br>
+    (Artificial Intelligence and Machine Learning)
+  </div>
+
+  <div class="cover-field">
+    <span>Institution:</span>
+    <span class="line short"></span>
+  </div>
+
+  <div class="cover-repo">
+    <p class="repo-label">Project Repository</p>
+    <a href="https://github.com/sirivennela/student-attendance-devops">https://github.com/sirivennela/student-attendance-devops</a>
+  </div>
+
+  <div class="footer"><span class="page-number">1</span></div>
+</section>
+
+<!-- ============================== PAGE 2 ============================== -->
+<section class="page page-2">
+  <h2>Abstract</h2>
+  <p>
+    The Student Attendance Management System is a web-based application intended to simplify daily
+    attendance recording and monthly attendance calculations. Faculty can view registered students,
+    record attendance for seven periods per day, retrieve date-wise records, and review monthly
+    summaries. The backend uses Node.js 22 and Express, with SQLite for persistent data storage. The
+    project demonstrates DevOps practices through Git for version control, Jenkins for continuous
+    integration, Docker for containerization, Kubernetes for orchestration, and Selenium WebDriver
+    with JavaScript for automated browser checks.
+  </p>
+
+  <h2 class="section-gap">1. Introduction</h2>
+  <p>
+    Manual attendance tracking can be time-consuming when a class contains many students and
+    attendance must be recorded for several periods each day. The application centralizes attendance
+    operations in a web interface and provides APIs for student records, daily attendance, attendance
+    history, monthly reports, and CSV export. It is packaged as a Docker image, validated by Jenkins,
+    and deployed with Docker Compose and Kubernetes.
+  </p>
+
+  <h2 class="section-gap">2. Problem Statement</h2>
+  <p>
+    Manual attendance records require repeated data entry and separate calculations. This can lead to
+    errors, difficulty retrieving historical records, and delays in identifying students with low
+    attendance. A digital system is required to store records by student, date, and period and
+    calculate monthly summaries consistently.
+  </p>
+
+  <h2 class="section-gap">3. Objectives</h2>
+  <ul>
+    <li>Manage registered students in a centralized class list.</li>
+    <li>Record Present or Absent status for seven periods per day.</li>
+    <li>Store attendance by student, date, and period with a uniqueness constraint.</li>
+    <li>Calculate working periods, present periods, absent periods, and attendance percentage.</li>
+    <li>Provide student-wise reports, class-wise monthly summaries, daily history, and CSV export.</li>
+    <li>Identify students below the configured attendance threshold (75% by default).</li>
+    <li>Demonstrate version control, CI, containerization, orchestration, and automated checks.</li>
+  </ul>
+
+  <h2 class="section-gap">4. Scope and Functional Modules</h2>
+
+  <p class="module-name">Student Management</p>
+  <p class="module-text">
+    Add students using roll number, name, and department; list, edit, and delete records. Roll numbers
+    are unique and duplicates are rejected.
+  </p>
+
+  <p class="module-name">Daily Attendance</p>
+  <p class="module-text">
+    Select a date, display the class list, and mark attendance across Periods 1–7. Working periods
+    can be toggled for the selected day, and the register can be saved, reloaded, and corrected.
+  </p>
+
+  <p class="module-name">Attendance Record Management</p>
+  <p class="module-text">
+    Save and retrieve records by date and period. A unique key prevents duplicate student/date/period
+    entries, and deleting a student cascades to their attendance.
+  </p>
+
+  <p class="module-name">Monthly Attendance Calculation</p>
+  <p class="module-text">
+    Calculate working periods, present and absent totals, attendance percentage, and low-attendance
+    status against a configurable threshold.
+  </p>
+
+  <p class="module-name">Reports</p>
+  <p class="module-text">
+    Retrieve monthly class reports, individual student reports with daily breakdowns, daily history,
+    and CSV exports. Settings configures the threshold (0–100).
+  </p>
+
+  <div class="footer"><span class="page-number">2</span></div>
+</section>
+
+<!-- ============================== PAGE 3 ============================== -->
+<section class="page">
+  <h2>5. Technologies Used</h2>
+  <table class="tech-table">
+    <thead>
+      <tr><th>Technology area</th><th>Tool / implementation</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frontend</td><td>HTML5, CSS3, and vanilla JavaScript single-page application</td></tr>
+      <tr><td>Backend</td><td>Node.js 22 with Express.js</td></tr>
+      <tr><td>Database</td><td>SQLite using better-sqlite3</td></tr>
+      <tr><td>Version control</td><td>Git repository on the main branch, prepared for GitHub</td></tr>
+      <tr><td>Continuous integration</td><td>Jenkins Pipeline (Dockerized controller and agent)</td></tr>
+      <tr><td>Containerization</td><td>Docker multi-stage image</td></tr>
+      <tr><td>Orchestration / deployment</td><td>Kubernetes (kind cluster) with a NodePort Service</td></tr>
+      <tr><td>Automated browser checks</td><td>Selenium WebDriver for JavaScript with headless Chrome</td></tr>
+      <tr><td>Runtime endpoints</td><td>App 3000 · Jenkins 8080 · Kubernetes 30080</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-gap">6. System Architecture</h2>
+  <p>
+    A user interacts with the browser-based frontend. The frontend communicates with the Express
+    application, which validates requests and reads and writes attendance data in SQLite. Source code
+    is maintained in a Git repository. Jenkins checks out the repository, verifies the Node.js/npm
+    toolchain, installs dependencies, performs syntax checks, runs 22 API tests, builds a Docker image,
+    and runs a container smoke test. Kubernetes runs the container through a Deployment and exposes it
+    using a NodePort Service on port 30080. Selenium drives Chrome to verify the main application
+    workflows.
+  </p>
+
+  <figure>
+    <img class="shot w-full" src="assets/architecture.png" alt="Application request path and delivery pipeline diagram">
+    <figcaption>Figure 1 — Application request path, delivery pipeline, and automated verification.</figcaption>
+  </figure>
+
+  <div class="kpi-row">
+    <div class="kpi"><strong>22 / 22</strong><span>API tests passing</span></div>
+    <div class="kpi"><strong>7 / 7</strong><span>Selenium tests passing</span></div>
+    <div class="kpi"><strong>12</strong><span>smoke checks passing</span></div>
+    <div class="kpi"><strong>62 / 62</strong><span>adversarial API checks</span></div>
+  </div>
+
+  <div class="footer"><span class="page-number">3</span></div>
+</section>
+
+<!-- ============================== PAGE 4 ============================== -->
+<section class="page">
+  <h2>9. DevOps Implementation</h2>
+
+  <h3>9.1 Git and GitHub</h3>
+  <p>
+    The project source is maintained in a Git repository on the main branch. The repository contains
+    the application source, Dockerfile, Jenkinsfile, Kubernetes manifests, automated tests, and
+    documentation. The final code commit used for this report is <strong>122609d</strong>
+    (“Stabilize no-data Selenium test waits”), which follows <strong>055fc65</strong> (“Harden
+    validation, error handling and no-data reporting”). The repository is prepared for publication at
+    the GitHub URL shown below; after the first push, replace the placeholder panel with a screenshot
+    of the repository home page.
+  </p>
+
+  <figure>
+    <img class="shot w-130" src="assets/git-log.png" alt="Git history on the main branch">
+    <figcaption>Figure 2 — Local Git history on the main branch.</figcaption>
+  </figure>
+
+  <figure>
+    <img class="shot w-150" src="assets/github-placeholder.png" alt="Placeholder for the GitHub repository screenshot">
+    <figcaption>Figure 3 — GitHub repository page. Replace with a real screenshot after pushing.</figcaption>
+  </figure>
+
+  <h3>9.2 Jenkins Pipeline</h3>
+  <p>
+    A Jenkins Pipeline job named <strong>student-attendance-pipeline</strong> retrieves the Jenkinsfile
+    from the repository. The pipeline verifies the environment, installs dependencies with
+    <code>npm ci</code>, runs syntax checks and all 22 API tests, builds the Docker image
+    <strong>student-attendance:ci-&lt;build&gt;</strong>, and starts the container for a smoke test.
+    Build <strong>#8</strong> checked out commit 122609d and completed successfully in
+    <strong>14.2 seconds</strong>. The pipeline reported Node.js v22.23.4, npm 10.9.9, Git 2.47.3, and
+    Docker CLI 27.5.1.
+  </p>
+
+  <figure>
+    <img class="shot w-130" src="assets/jenkins-dashboard-crop.png" alt="Jenkins dashboard">
+    <figcaption>Figure 4 — Jenkins dashboard with the pipeline job.</figcaption>
+  </figure>
+
+  <div class="kpi-row">
+    <div class="kpi"><strong>#8</strong><span>successful build</span></div>
+    <div class="kpi"><strong>14.2 s</strong><span>total duration</span></div>
+    <div class="kpi"><strong>7 / 7</strong><span>stages passed</span></div>
+    <div class="kpi"><strong>22 / 22</strong><span>API tests</span></div>
+  </div>
+
+  <div class="footer"><span class="page-number">4</span></div>
+</section>
+
+<!-- ============================== PAGE 5 ============================== -->
+<section class="page">
+  <figure>
+    <img class="shot w-120" src="assets/jenkins-job.png" alt="Jenkins build 8 stage view">
+    <figcaption>Figure 5 — Build #8 stage view: every pipeline stage passed.</figcaption>
+  </figure>
+
+  <figure>
+    <img class="shot w-120" src="assets/jenkins-console.png" alt="Jenkins build 8 console output">
+    <figcaption>Figure 6 — Build #8 console output: checkout, dependency install, tests, image build, and smoke test.</figcaption>
+  </figure>
+
+  <h3>9.3 Docker</h3>
+  <p>
+    A multi-stage Dockerfile packages the Node.js application and its dependencies. The dependency
+    stage uses <code>node:22-bookworm-slim</code> and installs Python 3, make, and g++ so the native
+    better-sqlite3 module can be compiled when a prebuilt binary is unavailable. The runtime stage
+    copies only the production dependencies and application files, runs as the non-root
+    <code>node</code> user, exposes port 3000, includes a health check against <code>/api/health</code>,
+    and starts <code>server.js</code>. The final image is tagged
+    <strong>student-attendance:latest</strong> and <strong>student-attendance:ci-8</strong>.
+  </p>
+
+  <figure>
+    <img class="shot w-160" src="assets/docker-images.png" alt="Docker images list">
+    <figcaption>Figure 7 — Docker images, including the build #8 image, the Jenkins image, and the kind node image.</figcaption>
+  </figure>
+
+  <div class="footer"><span class="page-number">5</span></div>
+</section>
+
+<!-- ============================== PAGE 6 ============================== -->
+<section class="page">
+  <h3>9.4 Kubernetes</h3>
+  <p>
+    The Kubernetes Deployment is named <strong>student-attendance</strong> and runs one replica of the
+    <code>student-attendance:latest</code> container on port 3000. The
+    <strong>student-attendance</strong> Service is a NodePort Service exposed on port
+    <strong>30080</strong>. A 1 Gi PersistentVolumeClaim named <strong>attendance-data</strong> stores
+    the SQLite database, so data survives pod replacement. The manifests are applied with Kustomize to
+    the <code>student-attendance</code> namespace. The deployment was verified at
+    <strong>http://localhost:30080</strong>, and the same report totals were served after the pod was
+    deleted and recreated.
+  </p>
+
+  <figure>
+    <img class="shot w-160" src="assets/kubectl-workload.png" alt="kubectl pods and service output">
+    <figcaption>Figure 8 — Running pod and NodePort Service in the student-attendance namespace.</figcaption>
+  </figure>
+
+  <figure>
+    <img class="shot w-160" src="assets/kubectl-storage.png" alt="kubectl PVC and rollout output">
+    <figcaption>Figure 9 — Bound PersistentVolumeClaim and successful Deployment rollout.</figcaption>
+  </figure>
+
+  <h3>9.5 Selenium Automated Checks</h3>
+  <p>
+    Selenium WebDriver is installed as a development dependency, and a JavaScript test suite is run
+    with headless Chrome. The suite starts its own application instance with a temporary SQLite
+    database, so it does not modify demo data. All <strong>seven</strong> tests pass. The checks cover
+    dashboard statistics, adding a student through the interface, marking and saving all seven periods,
+    monthly and individual reports, CSV export, the no-data state for students without attendance, and
+    changing the attendance threshold.
+  </p>
+
+  <figure>
+    <img class="shot w-120" src="assets/selenium.png" alt="Selenium test output">
+    <figcaption>Figure 10 — Selenium end-to-end suite: 7 of 7 tests passed.</figcaption>
+  </figure>
+
+  <div class="footer"><span class="page-number">6</span></div>
+</section>
+
+<!-- ============================== PAGE 7 ============================== -->
+<section class="page">
+  <h2>Application Screenshots</h2>
+
+  <figure class="app-figure">
+    <img class="app-shot" src="assets/app-dashboard.png" alt="Attendly dashboard">
+    <figcaption>Figure 11 — Dashboard with class statistics, monthly trend, and low-attendance list.</figcaption>
+  </figure>
+
+  <figure class="app-figure">
+    <img class="app-shot" src="assets/app-attendance.png" alt="Attendly daily attendance register">
+    <figcaption>Figure 12 — Daily attendance register for seven periods, with present and absent totals.</figcaption>
+  </figure>
+
+  <figure class="app-figure">
+    <img class="app-shot" src="assets/app-reports.png" alt="Attendly monthly reports">
+    <figcaption>Figure 13 — Monthly class report with per-student percentages, threshold status, and CSV export.</figcaption>
+  </figure>
+
+  <div class="footer"><span class="page-number">7</span></div>
+</section>
+
+</body>
+</html>
