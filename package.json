@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check src/app.js && node --check src/database.js && node --check src/reports.js && node --check src/validation.js && node --check public/app.js && node --check tests/api.test.js && node --check tests/e2e.test.js",
+    "check": "node --check server.js && node --check src/app.js && node --check src/database.js && node --check src/reports.js && node --check src/validation.js && node --check public/app.js && node --check scripts/seed.js && node --check scripts/verify.js && node --check scripts/capture-screenshots.js && node --check tests/api.test.js && node --check tests/e2e.test.js",
     "test": "node --test tests/api.test.js",
     "test:api": "node --test tests/api.test.js",
     "test:e2e": "node --test tests/e2e.test.js",

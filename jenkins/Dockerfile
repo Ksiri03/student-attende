@@ -5,6 +5,9 @@
 
 FROM jenkins/jenkins:lts-jdk17
 
+# The pipeline intentionally checks out the project from a local read-only mount.
+ENV JAVA_OPTS="-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"
+
 USER root
 
 RUN apt-get update \
