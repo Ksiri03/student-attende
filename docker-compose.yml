@@ -1,0 +1,68 @@
+name: student-attendance-devops
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: student-attendance:latest
+    container_name: student-attendance-app
+    init: true
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOST: 0.0.0.0
+      DB_PATH: /app/data/attendance.db
+    volumes:
+      - attendance_data:/app/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    image: student-attendance-jenkins:latest
+    container_name: student-attendance-jenkins
+    init: true
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      JAVA_OPTS: >-
+        -Djenkins.install.runSetupWizard=false
+        -Djenkins.model.Jenkins.slaveAgentPort=50000
+        -Dhudson.model.DownloadService.noSignatureCheck=true
+      JENKINS_ADMIN_ID: admin
+      JENKINS_ADMIN_PASSWORD: admin123
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - //var/run/docker.sock:/var/run/docker.sock
+      - ./:/workspace:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/login >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 90s
+      retries: 10
+
+volumes:
+  attendance_data:
+    name: student-attendance-data
+  jenkins_home:
+    name: student-attendance-jenkins-home

@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta
+      name="description"
+      content="Attendly — a seven-period student attendance manager with monthly reports, CSV export, and a DevOps-ready workflow."
+    />
+    <title>Attendly — Student Attendance Management</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar" aria-label="Sidebar">
+        <div class="sidebar-glow" aria-hidden="true"></div>
+        <a class="brand" href="#dashboard" aria-label="Attendly dashboard">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img">
+              <path d="M8 17.5 13 22l11-12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M6 6.5h20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".55" />
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <strong>Attendly</strong>
+            <small>Attendance suite</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Main navigation">
+          <p class="nav-label">Workspace</p>
+          <a class="nav-link" href="#dashboard" data-nav="dashboard">
+            <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+            <span>Dashboard</span>
+          </a>
+          <a class="nav-link" href="#attendance" data-nav="attendance">
+            <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+            <span>Attendance</span>
+          </a>
+          <a class="nav-link" href="#students" data-nav="students">
+            <svg class="icon" aria-hidden="true"><use href="#i-users"></use></svg>
+            <span>Students</span>
+          </a>
+          <a class="nav-link" href="#reports" data-nav="reports">
+            <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+            <span>Reports</span>
+          </a>
+          <p class="nav-label nav-label-spaced">Manage</p>
+          <a class="nav-link" href="#settings" data-nav="settings">
+            <svg class="icon" aria-hidden="true"><use href="#i-settings"></use></svg>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="status-card">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div>
+              <strong>System online</strong>
+              <small>SQLite · Express</small>
+            </div>
+          </div>
+          <p class="sidebar-note">
+            Student Attendance<br />
+            Management System
+          </p>
+        </div>
+      </aside>
+
+      <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+
+      <div class="main-shell">
+        <header class="topbar">
+          <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
+          </button>
+
+          <div class="page-heading">
+            <p id="page-eyebrow">Overview</p>
+            <h1 id="page-title">Dashboard</h1>
+          </div>
+
+          <div class="topbar-actions">
+            <div class="date-chip">
+              <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+              <span id="today-label">—</span>
+            </div>
+            <div class="avatar" title="Faculty workspace" aria-label="Faculty workspace">FA</div>
+          </div>
+        </header>
+
+        <main id="main-content" class="content" tabindex="-1">
+          <!-- Dashboard ------------------------------------------------------>
+          <section class="view" id="view-dashboard" data-view="dashboard" aria-labelledby="page-title">
+            <div class="hero-card">
+              <div class="hero-copy">
+                <span class="eyebrow eyebrow-light">Faculty workspace</span>
+                <h2>Good <span id="dashboard-greeting">morning</span>, Faculty.</h2>
+                <p>Keep the whole class on track with seven-period attendance and clear, monthly insights.</p>
+                <div class="hero-actions">
+                  <a class="btn btn-light" href="#attendance">
+                    <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                    Take attendance
+                  </a>
+                  <a class="btn btn-glass" href="#reports">
+                    View reports
+                    <svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg>
+                  </a>
+                </div>
+              </div>
+              <div class="hero-ring-wrap" aria-label="Monthly attendance rate">
+                <div class="hero-ring" id="dashboard-ring">
+                  <div class="hero-ring-inner">
+                    <strong id="dashboard-ring-value">0%</strong>
+                    <span>this month</span>
+                  </div>
+                </div>
+                <p id="dashboard-month-label">—</p>
+              </div>
+            </div>
+
+            <div class="stats-grid" id="dashboard-stats" aria-live="polite">
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+            </div>
+
+            <div class="dashboard-grid dashboard-grid-wide">
+              <article class="card chart-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">Monthly trend</span>
+                    <h2>Attendance over time</h2>
+                  </div>
+                  <span class="pill pill-neutral" id="trend-pill">No records</span>
+                </div>
+                <div class="chart-area" id="dashboard-trend">
+                  <div class="empty-inline">Attendance history will appear here.</div>
+                </div>
+              </article>
+
+              <article class="card today-card" id="dashboard-today">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">Today</span>
+                    <h2>Today’s register</h2>
+                  </div>
+                  <span class="pill pill-neutral" id="today-status-pill">Not saved</span>
+                </div>
+                <div class="today-body">
+                  <div class="empty-inline">Loading today’s summary…</div>
+                </div>
+              </article>
+            </div>
+
+            <div class="dashboard-grid">
+              <article class="card low-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">Needs attention</span>
+                    <h2>Low attendance</h2>
+                  </div>
+                  <span class="pill pill-warning" id="low-count-pill">0 students</span>
+                </div>
+                <div id="dashboard-low">
+                  <div class="empty-inline">Low-attendance students will appear here.</div>
+                </div>
+              </article>
+
+              <article class="card quick-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">Shortcuts</span>
+                    <h2>Quick actions</h2>
+                  </div>
+                </div>
+                <div class="quick-actions">
+                  <a class="quick-action" href="#students">
+                    <span class="quick-icon"><svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg></span>
+                    <span><strong>Add a student</strong><small>Grow the class roster</small></span>
+                    <svg class="icon quick-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg>
+                  </a>
+                  <a class="quick-action" href="#attendance">
+                    <span class="quick-icon"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+                    <span><strong>Mark the register</strong><small>Record all seven periods</small></span>
+                    <svg class="icon quick-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg>
+                  </a>
+                  <a class="quick-action" href="#reports">
+                    <span class="quick-icon"><svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                    <span><strong>Download a report</strong><small>Export monthly CSV</small></span>
+                    <svg class="icon quick-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg>
+                  </a>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Attendance ----------------------------------------------------->
+          <section class="view" id="view-attendance" data-view="attendance" aria-labelledby="page-title" hidden>
+            <div class="view-toolbar">
+              <div class="field date-field">
+                <label for="attendance-date">Attendance date</label>
+                <div class="input-with-icon">
+                  <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                  <input type="date" id="attendance-date" />
+                </div>
+              </div>
+              <button class="btn btn-secondary" id="refresh-attendance" type="button">
+                <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+                Refresh
+              </button>
+            </div>
+
+            <article class="card attendance-card">
+              <div class="card-heading attendance-heading">
+                <div>
+                  <span class="eyebrow">Daily register</span>
+                  <h2>Class attendance</h2>
+                  <p id="attendance-context">Choose a date to load the register.</p>
+                </div>
+                <span class="pill pill-neutral" id="attendance-save-status">Not saved</span>
+              </div>
+
+              <div class="working-periods">
+                <div class="working-periods-label">
+                  <span>Working periods</span>
+                  <small>Toggle periods that were conducted</small>
+                </div>
+                <div class="period-toggles" id="period-toggles" role="group" aria-label="Working periods"></div>
+                <button class="btn btn-ghost btn-small" id="period-all" type="button">Select all 7</button>
+              </div>
+
+              <div class="attendance-toolbar">
+                <div class="bulk-actions">
+                  <button class="btn btn-soft btn-small" id="bulk-present" type="button">
+                    <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+                    Mark all present
+                  </button>
+                  <button class="btn btn-soft-danger btn-small" id="bulk-absent" type="button">
+                    <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+                    Mark all absent
+                  </button>
+                </div>
+                <div class="attendance-counts" id="attendance-counts" aria-live="polite"></div>
+              </div>
+
+              <div class="table-wrap attendance-table-wrap" id="attendance-table-wrap">
+                <div class="loading-state">Loading the class register…</div>
+              </div>
+
+              <div class="attendance-footer">
+                <p id="attendance-hint">Mark every student for each working period, then save.</p>
+                <button class="btn btn-primary" id="save-attendance" type="button">
+                  <svg class="icon" aria-hidden="true"><use href="#i-save"></use></svg>
+                  Save attendance
+                </button>
+              </div>
+            </article>
+          </section>
+
+          <!-- Students ------------------------------------------------------->
+          <section class="view" id="view-students" data-view="students" aria-labelledby="page-title" hidden>
+            <div class="split-layout">
+              <article class="card form-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">New admission</span>
+                    <h2>Add a student</h2>
+                    <p>Register a student to include them in the daily register.</p>
+                  </div>
+                </div>
+                <form id="add-student-form" novalidate>
+                  <div class="field">
+                    <label for="student-roll">Roll number</label>
+                    <input id="student-roll" name="roll_number" type="text" maxlength="30" placeholder="e.g. 23CS001" autocomplete="off" required />
+                  </div>
+                  <div class="field">
+                    <label for="student-name">Full name</label>
+                    <input id="student-name" name="name" type="text" maxlength="100" placeholder="e.g. Ananya Rao" autocomplete="name" required />
+                  </div>
+                  <div class="field">
+                    <label for="student-department">Department</label>
+                    <input id="student-department" name="department" type="text" maxlength="80" placeholder="e.g. Computer Science" list="department-suggestions" required />
+                    <datalist id="department-suggestions">
+                      <option value="Computer Science"></option>
+                      <option value="Information Technology"></option>
+                      <option value="Electronics and Communication"></option>
+                      <option value="Electrical and Electronics"></option>
+                      <option value="Mechanical Engineering"></option>
+                      <option value="Civil Engineering"></option>
+                    </datalist>
+                  </div>
+                  <p class="form-error" id="student-form-error" role="alert" hidden></p>
+                  <button class="btn btn-primary btn-full" id="add-student-button" type="submit">
+                    <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+                    Add student
+                  </button>
+                </form>
+                <div class="form-note">
+                  <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+                  <p>Roll numbers are unique. Student records are stored locally in SQLite.</p>
+                </div>
+              </article>
+
+              <article class="card roster-card">
+                <div class="card-heading roster-heading">
+                  <div>
+                    <span class="eyebrow">Class roster</span>
+                    <h2>Students <span class="count-badge" id="student-count-badge">0</span></h2>
+                  </div>
+                  <div class="search-field">
+                    <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                    <input id="student-search" type="search" placeholder="Search students…" aria-label="Search students" />
+                  </div>
+                </div>
+                <div id="students-list">
+                  <div class="loading-state">Loading students…</div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Reports -------------------------------------------------------->
+          <section class="view" id="view-reports" data-view="reports" aria-labelledby="page-title" hidden>
+            <div class="view-toolbar">
+              <div class="field date-field">
+                <label for="report-month">Report month</label>
+                <div class="input-with-icon">
+                  <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                  <input type="month" id="report-month" />
+                </div>
+              </div>
+              <div class="toolbar-actions">
+                <button class="btn btn-secondary" id="load-report" type="button">
+                  <svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg>
+                  Refresh
+                </button>
+                <a class="btn btn-primary" id="download-csv" href="#" download>
+                  <svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg>
+                  Export CSV
+                </a>
+              </div>
+            </div>
+
+            <div class="stats-grid" id="report-summary" aria-live="polite">
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+              <div class="stat-card skeleton-card"></div>
+            </div>
+
+            <article class="card report-card">
+              <div class="card-heading">
+                <div>
+                  <span class="eyebrow">Monthly summary</span>
+                  <h2>Class report</h2>
+                  <p id="report-context">Select a month to view attendance totals.</p>
+                </div>
+                <span class="pill pill-neutral" id="report-threshold">Threshold: 75%</span>
+              </div>
+              <div class="table-wrap" id="report-table">
+                <div class="loading-state">Loading monthly report…</div>
+              </div>
+            </article>
+
+            <article class="card history-card">
+              <div class="card-heading">
+                <div>
+                  <span class="eyebrow">Saved registers</span>
+                  <h2>Daily history</h2>
+                </div>
+              </div>
+              <div class="table-wrap" id="report-history">
+                <div class="loading-state">Loading daily history…</div>
+              </div>
+            </article>
+          </section>
+
+          <!-- Settings ------------------------------------------------------->
+          <section class="view" id="view-settings" data-view="settings" aria-labelledby="page-title" hidden>
+            <div class="settings-grid">
+              <article class="card form-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">Attendance policy</span>
+                    <h2>Low attendance threshold</h2>
+                    <p>Students below this monthly percentage are flagged for follow-up.</p>
+                  </div>
+                </div>
+                <form id="settings-form" novalidate>
+                  <div class="field">
+                    <label for="threshold-input">Minimum attendance (%)</label>
+                    <div class="threshold-input-wrap">
+                      <input id="threshold-input" type="number" min="0" max="100" step="1" inputmode="numeric" required />
+                      <span>%</span>
+                    </div>
+                    <p class="field-help">Use a whole number between 0 and 100. The default is 75%.</p>
+                  </div>
+                  <p class="form-error" id="settings-form-error" role="alert" hidden></p>
+                  <button class="btn btn-primary" id="save-settings" type="submit">
+                    <svg class="icon" aria-hidden="true"><use href="#i-save"></use></svg>
+                    Save settings
+                  </button>
+                </form>
+              </article>
+
+              <article class="card system-card">
+                <div class="card-heading">
+                  <div>
+                    <span class="eyebrow">System</span>
+                    <h2>Application status</h2>
+                  </div>
+                  <span class="pill pill-success" id="system-status">Checking…</span>
+                </div>
+                <dl class="system-list">
+                  <div><dt>Application</dt><dd>Attendly</dd></div>
+                  <div><dt>Version</dt><dd id="system-version">—</dd></div>
+                  <div><dt>Periods per day</dt><dd>7</dd></div>
+                  <div><dt>Database</dt><dd>SQLite (persistent)</dd></div>
+                  <div><dt>API health</dt><dd id="system-health">—</dd></div>
+                </dl>
+                <div class="form-note">
+                  <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+                  <p>Attendance is saved transactionally. Duplicate student/period/date records are prevented by the database.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </main>
+
+        <footer class="app-footer">
+          <span>Attendly · Student Attendance Management System</span>
+          <span>Seven periods · Monthly insights · DevOps ready</span>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Edit student dialog ------------------------------------------------>
+    <dialog class="modal" id="edit-student-dialog" aria-labelledby="edit-dialog-title">
+      <form method="dialog" class="modal-card" id="edit-student-form" novalidate>
+        <div class="modal-heading">
+          <div>
+            <span class="eyebrow">Class roster</span>
+            <h2 id="edit-dialog-title">Edit student</h2>
+          </div>
+          <button class="icon-button" type="button" id="edit-dialog-close" aria-label="Close dialog">
+            <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+          </button>
+        </div>
+        <div class="field">
+          <label for="edit-roll">Roll number</label>
+          <input id="edit-roll" type="text" maxlength="30" required />
+        </div>
+        <div class="field">
+          <label for="edit-name">Full name</label>
+          <input id="edit-name" type="text" maxlength="100" required />
+        </div>
+        <div class="field">
+          <label for="edit-department">Department</label>
+          <input id="edit-department" type="text" maxlength="80" list="department-suggestions" required />
+        </div>
+        <p class="form-error" id="edit-student-error" role="alert" hidden></p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" type="button" id="edit-cancel">Cancel</button>
+          <button class="btn btn-primary" type="submit" id="edit-save">
+            <svg class="icon" aria-hidden="true"><use href="#i-save"></use></svg>
+            Save changes
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Student report dialog --------------------------------------------->
+    <dialog class="modal modal-wide" id="report-dialog" aria-labelledby="report-dialog-title">
+      <div class="modal-card">
+        <div class="modal-heading">
+          <div>
+            <span class="eyebrow">Student report</span>
+            <h2 id="report-dialog-title">Student details</h2>
+          </div>
+          <button class="icon-button" type="button" id="report-dialog-close" aria-label="Close report">
+            <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+          </button>
+        </div>
+        <div id="report-dialog-content">
+          <div class="loading-state">Loading report…</div>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Confirmation dialog ------------------------------------------------>
+    <dialog class="modal modal-small" id="confirm-dialog" aria-labelledby="confirm-title">
+      <div class="modal-card">
+        <div class="confirm-icon" aria-hidden="true">
+          <svg class="icon"><use href="#i-alert"></use></svg>
+        </div>
+        <h2 id="confirm-title">Are you sure?</h2>
+        <p id="confirm-message">This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" type="button" id="confirm-cancel">Cancel</button>
+          <button class="btn btn-danger" type="button" id="confirm-ok">Delete</button>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M16 3v4M8 3v4M3 10h18" /><path d="m9 15 2 2 4-4" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18" /><path d="m7 16 4-5 4 3 5-7" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.64 8.9a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.53h.08A1.7 1.7 0 0 0 10.1 3V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.88V9c.26.6.84 1 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" /></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5" /></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5M12 15V3" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5" /></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /><path d="M12 9v4M12 17h.01" /></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></symbol>
+      <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><path d="M17 21v-8H7v8M7 3v5h8" /></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.9-4M4 4v5h5M4 13a8 8 0 0 0 14.9 4M20 20v-5h-5" /></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z" /><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8Z" /></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z" /><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" /></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" /><path d="m9 12 2 2 4-4" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></symbol>
+    </svg>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
