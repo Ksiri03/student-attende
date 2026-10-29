@@ -15,7 +15,7 @@ A single-class attendance manager built with Node.js, Express, and SQLite, deliv
 | Jenkins build #14 | http://localhost:8080/job/student-attendance-pipeline/14/ | **SUCCESS**, 19.7 s, commit `dbabc94` |
 | Build #14 console | http://localhost:8080/job/student-attendance-pipeline/14/console | Clone from `github.com/Ksiri03/student-attende` |
 | GitHub repository | https://github.com/Ksiri03/student-attende | Public source, README, report, and history |
-| Project report (PDF) | https://github.com/Ksiri03/student-attende/raw/main/docs/report/Attendly-Project-Report.pdf | 7-page faculty report |
+| Project report (PDF) | https://raw.githubusercontent.com/Ksiri03/student-attende/main/docs/report/Attendly-Project-Report.pdf | 7-page faculty report |
 | Report source | https://github.com/Ksiri03/student-attende/blob/main/docs/report/report.html | Editable HTML source |
 | Verification report | https://github.com/Ksiri03/student-attende/blob/main/docs/VERIFICATION.md | Full test, build, Docker, and Kubernetes evidence |
 | Report guide | https://github.com/Ksiri03/student-attende/blob/main/docs/report/REPORT_GUIDE.md | Screenshot map and re-render steps |
