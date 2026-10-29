@@ -23,7 +23,7 @@ This folder contains a 7-page report modelled on `chayankdev.pdf`, but written a
 | Jenkins job | http://localhost:8080/job/student-attendance-pipeline/ |
 | Jenkins build #8 | http://localhost:8080/job/student-attendance-pipeline/8/ |
 | Jenkins build #8 console | http://localhost:8080/job/student-attendance-pipeline/8/console |
-| Jenkins login | `admin` / `admin123` (local demo only) |
+| Jenkins login | None — authentication is disabled (local demo) |
 | GitHub repository (intended) | https://github.com/sirivennela/student-attendance-devops |
 | Final code commit | `122609d` — “Stabilize no-data Selenium test waits” |
 | Final image | `student-attendance:latest` = `student-attendance:ci-8` |
@@ -73,7 +73,7 @@ This writes `screenshots/01-dashboard.png` … `06-settings.png`. The report use
 
 ### 2. Jenkins screenshots (already captured)
 
-1. Open http://localhost:8080 and log in with `admin` / `admin123`.
+1. Open http://localhost:8080 — no login is required.
 2. Dashboard: capture the job list.
 3. Open **student-attendance-pipeline** → build **#8** → capture the stage view.
 4. Open **Console Output** for build #8 → capture the top of the log showing the checkout, tests, image build, and smoke test.
@@ -308,7 +308,7 @@ node -e "const {spawnSync}=require('child_process');const r=spawnSync('npm',['ru
 
 - **GitHub:** the repository is local; the report’s GitHub panel is a placeholder until you push. Do not claim a public repository exists before it does.
 - **Docker Hub:** the image is local only; no registry push was performed.
-- **Jenkins security:** the bundled Jenkins uses local demo credentials and runs as root for Docker socket access. It is intended for a local demonstration, not production.
+- **Jenkins security:** authentication is disabled for the local demo, and the controller is bound to `127.0.0.1`. It also runs as root for Docker socket access. It is intended for a local demonstration, not production.
 - **App authentication:** Attendly has no login; it is a local faculty workspace.
 - **Selenium:** the suite covers the main workflows, not every edge case. The 62-check adversarial API pass and 22 API tests cover the API more deeply.
 

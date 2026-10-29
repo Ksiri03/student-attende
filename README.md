@@ -91,16 +91,16 @@ npm run screenshots # regenerate documentation screenshots (requires a seeded ru
 
 The seed script generates demo attendance for **weekdays from the 1st of the current month through today**, with the final two students intentionally below the threshold. It refuses to modify a non-empty database unless `--reset` is supplied.
 
-### First login / demo credentials
+### Access
 
-The application itself has **no login** (it is a local faculty workspace). The bundled Jenkins controller uses local demo credentials:
+The application and the bundled Jenkins controller have **no login** (both are local demo services).
 
-| Service | URL | Username | Password |
-| --- | --- | --- | --- |
-| Attendly | http://localhost:3000 | — | — |
-| Jenkins | http://localhost:8080 | `admin` | `admin123` |
+| Service | URL |
+| --- | --- |
+| Attendly | http://localhost:3000 |
+| Jenkins | http://localhost:8080 |
 
-> Change the Jenkins password before exposing the controller to a network. See [Security and limitations](#security-and-limitations).
+> Jenkins authentication is disabled for this local demo, and the controller is bound to `127.0.0.1`. Do not expose port 8080 to a network. See [Security and limitations](#security-and-limitations).
 
 ## How attendance works
 
@@ -321,7 +321,7 @@ docker build -t student-attendance-jenkins:latest ./jenkins
 docker compose up -d jenkins
 ```
 
-Wait for Jenkins to finish starting, then open **http://localhost:8080** and sign in with `admin` / `admin123`.
+Wait for Jenkins to finish starting, then open **http://localhost:8080**. No login is required.
 
 The project directory is mounted read-only at `/workspace`, and the Docker socket is mounted so the pipeline can build images on the host Docker engine. On first start, Jenkins creates the job automatically. The job polls the local Git repository every five minutes and can also be triggered manually.
 
@@ -344,10 +344,10 @@ From the UI: open the job and choose **Build Now**.
 From the API, include a CSRF crumb:
 
 ```bash
-CRUMB=$(curl -s -u admin:admin123 \
+CRUMB=$(curl -s \
   http://localhost:8080/crumbIssuer/api/json | sed -E 's/.*"crumb":"([^"]+)".*/\1/')
 
-curl -u admin:admin123 \
+curl \
   -H "Jenkins-Crumb: $CRUMB" \
   -X POST http://localhost:8080/job/student-attendance-pipeline/build
 ```
@@ -355,7 +355,7 @@ curl -u admin:admin123 \
 Monitor the console:
 
 ```bash
-curl -u admin:admin123 \
+curl \
   http://localhost:8080/job/student-attendance-pipeline/lastBuild/consoleText
 ```
 
@@ -440,11 +440,9 @@ kind delete cluster --name student-attendance
 | `DB_PATH` | `./data/attendance.db` | App, seed | SQLite file path; directories are created automatically |
 | `NODE_ENV` | — | App | `production` enables static asset caching |
 | `CHROME_BIN` | auto-detected | Selenium tests | Explicit Chrome executable |
-| `JENKINS_ADMIN_ID` | `admin` | Jenkins init | Initial admin username |
-| `JENKINS_ADMIN_PASSWORD` | `admin123` | Jenkins init | Initial admin password |
 | `APP_URL` | `http://127.0.0.1:3000` | Screenshot script | Running app used for screenshots |
 
-Copy `.env.example` if you want to override the Jenkins demo credentials in a local shell. Docker Compose reads `.env` automatically.
+Docker Compose reads `.env` automatically if you add one for local overrides.
 
 ## Project structure
 
@@ -582,7 +580,7 @@ This is an educational/local deployment, not a hardened multi-tenant product.
 - **No audit log.** Corrections overwrite the previous status and update `updated_at`; there is no per-change history.
 - **Single class / single faculty workspace.** There is no academic-year, section, or multi-class model.
 - **SQLite** is excellent for this single-instance workload but is not a distributed database. The Kubernetes deployment uses one replica and a `ReadWriteOnce` volume.
-- **Jenkins demo credentials** (`admin` / `admin123`) are intentionally simple and must be changed before any shared or public use. The Jenkins controller runs as root in Compose for Docker socket access.
+- **Jenkins has no authentication** in this local demo. It is bound to `127.0.0.1` and runs as root in Compose for Docker socket access. Never expose port 8080 to a network or use this setup in production.
 - **CSV export** escapes cells and prefixes formula-like values to reduce spreadsheet injection risk, but always review exported files before opening untrusted data.
 - **No HTTPS** in the bundled local setup. Terminate TLS at a reverse proxy or ingress for production use.
 - **No GitHub remote is configured** in this local workspace. Add your own remote and push when authentication is available:

@@ -1,24 +1,14 @@
-import hudson.model.User
-import hudson.security.FullControlOnceLoggedInAuthorizationStrategy
-import hudson.security.HudsonPrivateSecurityRealm
+import hudson.security.AuthorizationStrategy
+import hudson.security.SecurityRealm
 import jenkins.model.Jenkins
 import jenkins.model.JenkinsLocationConfiguration
 
+// Local demo only: no login and no signup. The Compose port is bound to
+// 127.0.0.1 so the unsecured controller is not reachable from the network.
 def instance = Jenkins.get()
-def username = System.getenv("JENKINS_ADMIN_ID") ?: "admin"
-def password = System.getenv("JENKINS_ADMIN_PASSWORD") ?: "admin123"
 
-if (!(instance.getSecurityRealm() instanceof HudsonPrivateSecurityRealm)) {
-  def realm = new HudsonPrivateSecurityRealm(false)
-  if (User.get(username, false) == null) {
-    realm.createAccount(username, password)
-  }
-  instance.setSecurityRealm(realm)
-
-  def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-  strategy.setAllowAnonymousRead(false)
-  instance.setAuthorizationStrategy(strategy)
-}
+instance.setSecurityRealm(SecurityRealm.NO_AUTHENTICATION)
+instance.setAuthorizationStrategy(AuthorizationStrategy.UNSECURED)
 
 def location = JenkinsLocationConfiguration.get()
 if (!location.getUrl() || location.getUrl().contains("localhost:8080")) {
@@ -28,9 +18,9 @@ if (!location.getUrl() || location.getUrl().contains("localhost:8080")) {
 
 instance.setSystemMessage(
   "Student Attendance Management System — CI/CD controller. " +
-  "This Jenkins instance is configured for local development."
+  "Local development instance with authentication disabled."
 )
 instance.setNumExecutors(2)
 instance.save()
 
-println "Jenkins security initialized for user '${username}'."
+println "Jenkins authentication disabled for local development."

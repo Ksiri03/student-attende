@@ -100,7 +100,7 @@ Verification performed:
 
 Job: `student-attendance-pipeline`  
 URL: http://localhost:8080/job/student-attendance-pipeline/  
-Credentials: `admin` / `admin123` (local demo only)
+Authentication: disabled (local demo, bound to `127.0.0.1`)
 
 | Build | Commit | Trigger | Result | Duration |
 | --- | --- | --- | --- | --- |
@@ -175,6 +175,7 @@ Manual checks included adding/editing/deleting students, bulk marking, saving an
 ## Notes and known limitations
 
 - **Jenkins plugin advisories:** the image build reports security advisories for `workflow-multibranch` and `pipeline-groovy-lib`. These are acceptable for the local demo; update or pin newer plugin versions before exposing Jenkins.
+- **Jenkins authentication:** disabled for the local demo, and port 8080 is bound to `127.0.0.1`. Do not expose the controller to a network.
 - **Jenkins privileges:** Compose runs Jenkins as `root` so it can use the mounted Docker socket. This is a local-development choice, not a production configuration.
 - **Application authentication:** the app intentionally has no login. Deploy it behind an authenticated reverse proxy before exposing it.
 - **Timezone:** containers default to UTC. The demo data in Compose and Kubernetes was seeded with `TZ=Asia/Kolkata` so it matches the local demo date. Use your own IANA timezone if needed.
