@@ -24,7 +24,7 @@ This folder contains a 7-page report modelled on `chayankdev.pdf`, but written a
 | Jenkins build #8 | http://localhost:8080/job/student-attendance-pipeline/8/ |
 | Jenkins build #8 console | http://localhost:8080/job/student-attendance-pipeline/8/console |
 | Jenkins login | None — authentication is disabled (local demo) |
-| GitHub repository (intended) | https://github.com/sirivennela/student-attendance-devops |
+| GitHub repository | https://github.com/Ksiri03/student-attende |
 | Final code commit | `122609d` — “Stabilize no-data Selenium test waits” |
 | Final image | `student-attendance:latest` = `student-attendance:ci-8` |
 | Image ID | `sha256:ec22786cc3c10884f937b58f202c3af204d88957eb563c6f8fa56a8b1460fa1d` |

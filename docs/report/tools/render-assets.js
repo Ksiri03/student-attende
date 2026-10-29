@@ -206,7 +206,7 @@ function githubPlaceholderHtml() {
         <p>Replace this panel with a screenshot of the pushed repository after the first <code>git push</code>.</p>
       </div>
     </div>
-    <div class="url">https://github.com/sirivennela/student-attendance-devops</div>
+    <div class="url">https://github.com/Ksiri03/student-attende</div>
     <div class="tag">PLACEHOLDER — capture the real repository page after pushing</div>
     <div class="hint">Suggested capture: repository home page showing the README, commit count, and the green Code button.</div>
   </div>

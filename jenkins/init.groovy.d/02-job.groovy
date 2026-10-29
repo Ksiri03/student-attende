@@ -18,7 +18,7 @@ if (job == null) {
 }
 
 def scm = new GitSCM(
-  [new UserRemoteConfig("file:///workspace", "origin", null, null)],
+  [new UserRemoteConfig("https://github.com/Ksiri03/student-attende.git", "origin", null, null)],
   [new BranchSpec("*/main")],
   false,
   [],

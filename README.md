@@ -310,8 +310,8 @@ docker compose down -v
 
 - `jenkins/Dockerfile` — Jenkins LTS on JDK 17 with Git, Node.js 22, npm, Docker CLI, Buildx, Compose, and the required plugins.
 - `jenkins/plugins.txt` — Git, pipeline, workflow, credentials, timestamps, and related plugins.
-- `jenkins/init.groovy.d/01-security.groovy` — creates the local admin account and configures Jenkins.
-- `jenkins/init.groovy.d/02-job.groovy` — creates/updates the `student-attendance-pipeline` job using `file:///workspace` and branch `*/main`.
+- `jenkins/init.groovy.d/01-security.groovy` — disables authentication for the local demo and configures Jenkins.
+- `jenkins/init.groovy.d/02-job.groovy` — creates/updates the `student-attendance-pipeline` job using the GitHub repository and branch `*/main`.
 - `Jenkinsfile` — the pipeline itself.
 
 ### Start Jenkins
@@ -323,7 +323,7 @@ docker compose up -d jenkins
 
 Wait for Jenkins to finish starting, then open **http://localhost:8080**. No login is required.
 
-The project directory is mounted read-only at `/workspace`, and the Docker socket is mounted so the pipeline can build images on the host Docker engine. On first start, Jenkins creates the job automatically. The job polls the local Git repository every five minutes and can also be triggered manually.
+The Docker socket is mounted so the pipeline can build images on the host Docker engine. On first start, Jenkins creates the job automatically. The job checks out `https://github.com/Ksiri03/student-attende.git` on branch `main`, polls it every five minutes, and can also be triggered manually.
 
 ### Pipeline stages
 
@@ -359,17 +359,17 @@ curl \
   http://localhost:8080/job/student-attendance-pipeline/lastBuild/consoleText
 ```
 
-### Important: commit to `main` first
+### Important: push to GitHub first
 
-The Jenkins job checks out `file:///workspace` on branch `*/main`. If the project is not a Git repository yet, initialize and commit it before building:
+The Jenkins job checks out `https://github.com/Ksiri03/student-attende.git` on branch `main`. Commit and push before building:
 
 ```bash
-git init -b main
 git add .
-git commit -m "Initial Attendly implementation"
+git commit -m "Update Attendly"
+git push origin main
 ```
 
-If you change the project later, commit the changes before triggering Jenkins, because Jenkins builds the committed revision rather than the working tree.
+Jenkins builds the pushed revision rather than the local working tree.
 
 ## Kubernetes with kind
 
@@ -583,12 +583,7 @@ This is an educational/local deployment, not a hardened multi-tenant product.
 - **Jenkins has no authentication** in this local demo. It is bound to `127.0.0.1` and runs as root in Compose for Docker socket access. Never expose port 8080 to a network or use this setup in production.
 - **CSV export** escapes cells and prefixes formula-like values to reduce spreadsheet injection risk, but always review exported files before opening untrusted data.
 - **No HTTPS** in the bundled local setup. Terminate TLS at a reverse proxy or ingress for production use.
-- **No GitHub remote is configured** in this local workspace. Add your own remote and push when authentication is available:
-
-```bash
-git remote add origin https://github.com/<your-account>/<your-repo>.git
-git push -u origin main
-```
+- **GitHub repository:** the project is published at https://github.com/Ksiri03/student-attende. The repository is public; review it before sharing the demo.
 
 ## License
 
