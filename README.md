@@ -4,8 +4,11 @@ A complete, DevOps-ready attendance manager for a single class. It records **sev
 
 ![Attendly dashboard](screenshots/01-dashboard.png)
 
+> **Faculty showcase:** see [SHOWCASE.md](SHOWCASE.md) for all live links, build evidence, and a short demo flow.
+
 ## Contents
 
+- [Faculty showcase](SHOWCASE.md)
 - [Feature highlights](#feature-highlights)
 - [Tech stack](#tech-stack)
 - [Quick start](#quick-start)
