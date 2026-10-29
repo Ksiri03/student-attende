@@ -23,7 +23,11 @@ const tempDir = path.join(__dirname, ".render-tmp");
 fs.mkdirSync(tempDir, { recursive: true });
 
 function readRaw(name) {
-  return fs.readFileSync(path.join(rawDir, name), "utf8").replace(/\r\n/g, "\n").replace(/\s+$/, "");
+  return fs
+    .readFileSync(path.join(rawDir, name), "utf8")
+    .replace(/^\uFEFF/, "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\s+$/, "");
 }
 
 function escapeHtml(value) {
@@ -172,47 +176,6 @@ function diagramHtml() {
 </body></html>`;
 }
 
-function githubPlaceholderHtml() {
-  return `<!doctype html>
-<html><head><meta charset="utf-8"><style>
-  html, body { margin: 0; background: #ffffff; }
-  #capture {
-    width: 1240px; box-sizing: border-box; padding: 30px 34px;
-    background: #ffffff; border: 2px dashed #9fb3c8; border-radius: 10px;
-    font-family: "Segoe UI", Arial, sans-serif; color: #17365d;
-  }
-  .top { display: flex; align-items: center; gap: 14px; }
-  .mark {
-    width: 46px; height: 46px; border-radius: 50%; background: #17365d; color: #fff;
-    display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700;
-  }
-  h2 { margin: 0; font-size: 20px; }
-  p { margin: 6px 0 0; color: #51657d; font-size: 13.5px; line-height: 1.55; }
-  .url {
-    margin-top: 18px; padding: 13px 16px; background: #eef3f9; border: 1px solid #c9d6e6;
-    border-radius: 7px; font-family: "Consolas", monospace; font-size: 14px; color: #17365d;
-  }
-  .hint { margin-top: 14px; font-size: 12.5px; color: #6b7f96; }
-  .tag {
-    display: inline-block; margin-top: 12px; padding: 4px 11px; border-radius: 999px;
-    background: #fff4d6; color: #7a5a00; font-size: 11.5px; font-weight: 700;
-  }
-</style></head><body>
-  <div id="capture">
-    <div class="top">
-      <div class="mark">GH</div>
-      <div>
-        <h2>GitHub repository page</h2>
-        <p>Replace this panel with a screenshot of the pushed repository after the first <code>git push</code>.</p>
-      </div>
-    </div>
-    <div class="url">https://github.com/Ksiri03/student-attende</div>
-    <div class="tag">PLACEHOLDER — capture the real repository page after pushing</div>
-    <div class="hint">Suggested capture: repository home page showing the README, commit count, and the green Code button.</div>
-  </div>
-</body></html>`;
-}
-
 async function capture(driver, html, name, selector = "#capture") {
   const file = path.join(tempDir, `${name}.html`);
   fs.writeFileSync(file, html, "utf8");
@@ -228,11 +191,8 @@ async function capture(driver, html, name, selector = "#capture") {
 function dockerLines() {
   const keep = new Map([
     ["student-attendance|latest", 0],
-    ["student-attendance|ci-8", 1],
-    ["student-attendance|ci-7", 2],
-    ["student-attendance|ci-6", 3],
-    ["student-attendance-jenkins|latest", 4],
-    ["kindest/node|<none>", 5],
+    ["student-attendance-jenkins|latest", 1],
+    ["kindest/node|<none>", 2],
   ]);
 
   const rows = readRaw("docker-images.txt")
@@ -349,7 +309,6 @@ async function main() {
     );
 
     await capture(driver, diagramHtml(), "architecture");
-    await capture(driver, githubPlaceholderHtml(), "github-placeholder");
   } finally {
     await driver.quit();
     fs.rmSync(tempDir, { recursive: true, force: true });

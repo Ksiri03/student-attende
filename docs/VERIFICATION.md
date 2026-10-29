@@ -62,7 +62,7 @@ Evidence:
 - `docker build --no-cache --pull`: PASS; isolated container healthy as UID 1000 (`node`).
 - Isolated container seed with `TZ=Asia/Kolkata`: 12 students, 21 working days, 147 periods, 1,580 present, 184 absent, 89.57% average, 2 low-attendance students.
 - SQLite `integrity_check` = `ok`; foreign-key violations = 0 after restart.
-- Compose and Kubernetes redeployed to the build #8 image; data totals unchanged.
+- Compose and Kubernetes redeployed to the final image built by Jenkins build #14; data totals unchanged.
 - The no-data Selenium test now waits for rendered row text instead of raw element presence; it passed three consecutive full-suite runs (7/7 each).
 
 ## Docker
@@ -112,6 +112,12 @@ Authentication: disabled (local demo, bound to `127.0.0.1`)
 | #6 | `055fc65` | User | SUCCESS | 15.0 s |
 | #7 | `df2cff6` | User | SUCCESS | 12.2 s |
 | #8 | `122609d` | User | SUCCESS | 14.2 s |
+| #9 | `21b0452` | SCM change | SUCCESS | 11.8 s |
+| #10 | `21b0452` | User | SUCCESS | 12.0 s |
+| #11 | `21b0452` | User | SUCCESS | 11.0 s |
+| #12 | `dcf334d` | SCM change | SUCCESS | 39.8 s |
+| #13 | `dbabc94` | SCM change | SUCCESS | 12.6 s |
+| #14 | `dbabc94` | User | SUCCESS | 19.7 s |
 
 Build #1 failed because Jenkins refused to check out the local `file:///workspace` remote by default. The controller was configured with:
 
@@ -121,15 +127,29 @@ Build #1 failed because Jenkins refused to check out the local `file:///workspac
 
 The property is present in both `jenkins/Dockerfile` and the Compose `JAVA_OPTS`. Subsequent builds succeeded.
 
-Documentation-only commits after the final code build may trigger additional successful builds; they do not change the application image. The final code build (#8) executed every stage:
+Documentation-only commits after the final code build produced additional successful builds (#9–#13); they did not change the application source. The final evidence build (#14) executed every stage:
 
 1. **Environment** — reported Node v22.23.4, npm 10.9.9, Git 2.47.3, Docker CLI 27.5.1, Docker server 29.7.2.
 2. **Install dependencies** — `npm ci` installed 132 packages with 0 vulnerabilities.
 3. **Validate application** — `npm run check` and all 22 API tests passed.
-4. **Build Docker image** — built `student-attendance:ci-8` and retagged `student-attendance:latest`.
+4. **Build Docker image** — built `student-attendance:ci-14` and retagged `student-attendance:latest`.
 5. **Container smoke test** — started the image, waited for health, created a student, saved seven periods, verified the monthly report, and removed the container.
 
-Build #8 checked out commit `122609d` and finished with `Finished: SUCCESS` in 14.2 seconds. Its image ID is `sha256:ec22786cc3c10884f937b58f202c3af204d88957eb563c6f8fa56a8b1460fa1d`.
+Build #14 checked out commit `dbabc94` from `https://github.com/Ksiri03/student-attende.git` and finished with `Finished: SUCCESS` in 19.7 seconds. Its image ID is `sha256:4d6a62b8003f85ef7f53b565aafc908327ebdd8a51d0c26e7133cc91ab7e4e77`.
+
+### GitHub integration
+
+| Check | Result |
+| --- | --- |
+| Repository | https://github.com/Ksiri03/student-attende (public) |
+| Branch | `main` |
+| Jenkins SCM URL | `https://github.com/Ksiri03/student-attende.git` |
+| Build #14 checkout | `Cloning repository https://github.com/Ksiri03/student-attende.git` |
+| Build #14 revision | `dbabc946ce73c4730e5493366ab621f00101ee44` (`refs/remotes/origin/main`) |
+| Build #14 commit message | “Point project and Jenkins pipeline at GitHub repository” |
+| Build #14 result | `Finished: SUCCESS` |
+
+Build #13 started before the Jenkins restart and still used the old local `file:///workspace` SCM. Build #14 is the first build that cloned the public GitHub repository and is the evidence used in the report. SCM polling is paused in the running demo after build #14 so the report’s image and screenshots remain stable; **Build Now** still works.
 
 ## Kubernetes with kind
 
@@ -145,7 +165,7 @@ Build #8 checked out commit `122609d` and finished with `Finished: SUCCESS` in 1
 | Health at `http://localhost:30080/api/health` | PASS |
 | Persistence across pod deletion/replacement | PASS |
 
-The build #8 image was loaded into kind, the Deployment was restarted, and the pod was deleted and replaced again. The replacement pod served the same report totals from the PVC, and the new validation behavior (`null` threshold → `400`) was confirmed through NodePort 30080. The demo data was seeded inside the pod with `TZ=Asia/Kolkata`:
+The image built by Jenkins build #14 was loaded into kind, the Deployment was restarted, and the pod was deleted and replaced again. The replacement pod served the same report totals from the PVC, and the new validation behavior (`null` threshold → `400`) was confirmed through NodePort 30080. The demo data was seeded inside the pod with `TZ=Asia/Kolkata`:
 
 - 12 students
 - 21 working days
@@ -179,8 +199,9 @@ Manual checks included adding/editing/deleting students, bulk marking, saving an
 - **Jenkins privileges:** Compose runs Jenkins as `root` so it can use the mounted Docker socket. This is a local-development choice, not a production configuration.
 - **Application authentication:** the app intentionally has no login. Deploy it behind an authenticated reverse proxy before exposing it.
 - **Timezone:** containers default to UTC. The demo data in Compose and Kubernetes was seeded with `TZ=Asia/Kolkata` so it matches the local demo date. Use your own IANA timezone if needed.
-- **GitHub:** no remote was configured and no push was performed because GitHub credentials were unavailable in this environment. The local repository is initialized on `main` with the complete project history.
-- **Docker Hub:** no registry credentials were available, so the image was not pushed. It is available locally as `student-attendance:latest` and `student-attendance:ci-8`.
+- **GitHub:** the repository is public at https://github.com/Ksiri03/student-attende. Do not commit secrets or environment files; the demo does not require a `.env` file.
+- **Docker Hub:** no registry credentials were available, so the image was not pushed. It is available locally as `student-attendance:latest` (image ID `4d6a62b8003f`). The temporary CI tag was removed after deployment.
+- **SCM polling:** polling is configured in `jenkins/init.groovy.d/02-job.groovy` but paused in the running demo after build #14. Re-enabling it will create build #15 on the next change.
 
 ## Reproduction commands
 

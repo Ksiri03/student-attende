@@ -454,44 +454,45 @@
 
   <h3>9.1 Git and GitHub</h3>
   <p>
-    The project source is maintained in a Git repository on the main branch. The repository contains
-    the application source, Dockerfile, Jenkinsfile, Kubernetes manifests, automated tests, and
-    documentation. The final code commit used for this report is <strong>122609d</strong>
-    (“Stabilize no-data Selenium test waits”), which follows <strong>055fc65</strong> (“Harden
-    validation, error handling and no-data reporting”). The repository is prepared for publication at
-    the GitHub URL shown below; after the first push, replace the placeholder panel with a screenshot
-    of the repository home page.
+    The project source is maintained in a public Git repository on GitHub at the URL shown below. The
+    repository contains the application source, Dockerfile, Jenkinsfile, Kubernetes manifests,
+    automated tests, and documentation. The final commit built for this report is
+    <strong>dbabc94</strong> (“Point project and Jenkins pipeline at GitHub repository”), which follows
+    <strong>dcf334d</strong> (“Disable Jenkins authentication for local demo”) and
+    <strong>122609d</strong> (“Stabilize no-data Selenium test waits”). The main branch holds the
+    complete project history, and Jenkins clones this repository for every build.
   </p>
 
   <figure>
-    <img class="shot w-130" src="assets/git-log.png" alt="Git history on the main branch">
+    <img class="shot w-120" src="assets/git-log.png" alt="Git history on the main branch">
     <figcaption>Figure 2 — Local Git history on the main branch.</figcaption>
   </figure>
 
   <figure>
-    <img class="shot w-150" src="assets/github-placeholder.png" alt="Placeholder for the GitHub repository screenshot">
-    <figcaption>Figure 3 — GitHub repository page. Replace with a real screenshot after pushing.</figcaption>
+    <img class="shot w-150" src="assets/github-repo-crop.png" alt="Public GitHub repository for the project">
+    <figcaption>Figure 3 — Public GitHub repository at github.com/Ksiri03/student-attende.</figcaption>
   </figure>
 
   <h3>9.2 Jenkins Pipeline</h3>
   <p>
     A Jenkins Pipeline job named <strong>student-attendance-pipeline</strong> retrieves the Jenkinsfile
-    from the repository. The pipeline verifies the environment, installs dependencies with
-    <code>npm ci</code>, runs syntax checks and all 22 API tests, builds the Docker image
-    <strong>student-attendance:ci-&lt;build&gt;</strong>, and starts the container for a smoke test.
-    Build <strong>#8</strong> checked out commit 122609d and completed successfully in
-    <strong>14.2 seconds</strong>. The pipeline reported Node.js v22.23.4, npm 10.9.9, Git 2.47.3, and
+    directly from the GitHub repository. The pipeline verifies the environment, installs dependencies
+    with <code>npm ci</code>, runs syntax checks and all 22 API tests, builds the Docker image
+    <strong>student-attendance:ci-&lt;build&gt;</strong>, retags it as
+    <strong>student-attendance:latest</strong>, and starts the container for a smoke test. Build
+    <strong>#14</strong> cloned commit dbabc94 from GitHub and completed successfully in
+    <strong>19.7 seconds</strong>. The pipeline reported Node.js v22.23.4, npm 10.9.9, Git 2.47.3, and
     Docker CLI 27.5.1.
   </p>
 
   <figure>
-    <img class="shot w-130" src="assets/jenkins-dashboard-crop.png" alt="Jenkins dashboard">
+    <img class="shot w-120" src="assets/jenkins-dashboard-crop.png" alt="Jenkins dashboard">
     <figcaption>Figure 4 — Jenkins dashboard with the pipeline job.</figcaption>
   </figure>
 
   <div class="kpi-row">
-    <div class="kpi"><strong>#8</strong><span>successful build</span></div>
-    <div class="kpi"><strong>14.2 s</strong><span>total duration</span></div>
+    <div class="kpi"><strong>#14</strong><span>successful build</span></div>
+    <div class="kpi"><strong>19.7 s</strong><span>total duration</span></div>
     <div class="kpi"><strong>7 / 7</strong><span>stages passed</span></div>
     <div class="kpi"><strong>22 / 22</strong><span>API tests</span></div>
   </div>
@@ -502,13 +503,13 @@
 <!-- ============================== PAGE 5 ============================== -->
 <section class="page">
   <figure>
-    <img class="shot w-120" src="assets/jenkins-job.png" alt="Jenkins build 8 stage view">
-    <figcaption>Figure 5 — Build #8 stage view: every pipeline stage passed.</figcaption>
+    <img class="shot w-120" src="assets/jenkins-job.png" alt="Jenkins build 14 stage view">
+    <figcaption>Figure 5 — Build #14 stage view: every pipeline stage passed.</figcaption>
   </figure>
 
   <figure>
-    <img class="shot w-120" src="assets/jenkins-console.png" alt="Jenkins build 8 console output">
-    <figcaption>Figure 6 — Build #8 console output: checkout, dependency install, tests, image build, and smoke test.</figcaption>
+    <img class="shot w-120" src="assets/jenkins-console.png" alt="Jenkins build 14 console output">
+    <figcaption>Figure 6 — Build #14 console output: GitHub checkout, dependency install, tests, image build, and smoke test.</figcaption>
   </figure>
 
   <h3>9.3 Docker</h3>
@@ -519,12 +520,14 @@
     copies only the production dependencies and application files, runs as the non-root
     <code>node</code> user, exposes port 3000, includes a health check against <code>/api/health</code>,
     and starts <code>server.js</code>. The final image is tagged
-    <strong>student-attendance:latest</strong> and <strong>student-attendance:ci-8</strong>.
+    <strong>student-attendance:latest</strong> (image ID <strong>4d6a62b8003f</strong>). The temporary
+    CI tag was removed after deployment, so only the working image remains, alongside the Jenkins
+    controller and the kind node image required by the local infrastructure.
   </p>
 
   <figure>
     <img class="shot w-160" src="assets/docker-images.png" alt="Docker images list">
-    <figcaption>Figure 7 — Docker images, including the build #8 image, the Jenkins image, and the kind node image.</figcaption>
+    <figcaption>Figure 7 — Docker images after cleanup: the working latest image, the Jenkins controller, and the kind node image.</figcaption>
   </figure>
 
   <div class="footer"><span class="page-number">5</span></div>

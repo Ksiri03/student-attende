@@ -323,7 +323,7 @@ docker compose up -d jenkins
 
 Wait for Jenkins to finish starting, then open **http://localhost:8080**. No login is required.
 
-The Docker socket is mounted so the pipeline can build images on the host Docker engine. On first start, Jenkins creates the job automatically. The job checks out `https://github.com/Ksiri03/student-attende.git` on branch `main`, polls it every five minutes, and can also be triggered manually.
+The Docker socket is mounted so the pipeline can build images on the host Docker engine. On first start, Jenkins creates the job automatically. The job checks out `https://github.com/Ksiri03/student-attende.git` on branch `main` and can be triggered manually. SCM polling is configured in `jenkins/init.groovy.d/02-job.groovy`; it is paused in the running showcase after the final evidence build so the image and report stay stable.
 
 ### Pipeline stages
 

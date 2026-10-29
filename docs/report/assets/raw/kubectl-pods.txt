@@ -1,2 +1,2 @@
-﻿NAME                                  READY   STATUS    RESTARTS   AGE   IP            NODE                               NOMINATED NODE   READINESS GATES
-student-attendance-7d7788d6c8-24nbg   1/1     Running   0          17m   10.244.0.12   student-attendance-control-plane   <none>           <none>
+﻿NAME                                  READY   STATUS    RESTARTS   AGE     IP            NODE                               NOMINATED NODE   READINESS GATES
+student-attendance-6f95fbf649-v9z9m   1/1     Running   0          2m10s   10.244.0.14   student-attendance-control-plane   <none>           <none>
